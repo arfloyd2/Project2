@@ -145,9 +145,8 @@ PNUMData <- function(statename = "all") {
    }
    
   }
-  
   else{
-    print(message("Error: Please enter a valid state or county name"))
+    
   }
   
   finoutput <- output %>% select(state,county,incidentType,county,educationApplicant,numberOfProjects,federalObligatedAmount)
@@ -163,112 +162,97 @@ Below is an output example for the county of Lamar in Alabama.
 PNUMData("Lamar")
 ```
 
+## Individual Assistance for Homeowners 
 
----
-title: "Project 2: Creating Vignettes for API's"
-author: "Angelice Floyd"
-date: "2023-10-07"
-urlcolor: blue
----
+This next API Endpoint yeilds financial data from the FEMA Housing Assistance Program for Homeowners by zip code, county, city, and state for registered states. Since, I will not be excluding any data for the numerical analysis, all of the modifications and connections are doine in the same function.The first portion of the code is used to produce an initial connection to the  `HousingAssistanceOwners` API. This brings in the data for all of the states, counties, zip codes and cities- this is the default setting for the statename input. If the user chooses not to incorporate all of the regional based data, there are some options that they could type in which correspond to the following :  
+  * Two letter state abbreviation: ex: AL  
+  * specific full state name  
+  * Zip code if the region is registered and in the dataset : This has to be in a character string.  
+  * City: must be in all capitals. 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-This line of code creates the render function for R to be able to run wihout hitting the "Knit" button. 
-
-```{r rndr, eval = FALSE, echo = FALSE}
-rmarkdown::render("Project2.Rmd", 
-              output_format = "github_document", 
-              output_options = list(
-                name_value_pairs = "value", 
-                toc = TRUE,
-                toc_depth = 4, 
-                number_of_sections = TRUE, 
-                df_print = "paged", 
-                or_something = TRUE
-                )
-              )
-```
-
-  * Intro and Requirements   
-  * Functions for API Interaction  
-    * Function1  
-    * Function2  
-    * Function3  
-    * Function4  
-    * Function5  
-    * Function6  
-  * Data Exploration  
-  * Wrap- Up  
-
-
-#Introduction and Requirements 
-
-## Introduction 
-
-This project creates a vignette for reading and summarizing baseball statistics from a FEMA ( Federal Emergency Management Associate) API. The first section will consist of pulling in all of the necessary libraries needed to run the R program, contact the API from the MLB, create the exploratory data analysis from the data. The second sectino will create the functions for interacting with the API ( INSERT WICH PORTIONS OF THE OPTIONS THE USER CAN CHOOSE HERE ). The Third sectio will use the data from the API function interaction for some exploratory data analysis. Finally, there will be a wrap up to summarize what was done in the vignette.  
-
-## Requirements 
-
-This section loads the package required for interacting with the FEMA API, manipulating the data, and conducting exploratory data analysis.
-
-```{r lib, message = FALSE, warning = FALSE}
-library(tidyverse)
-library(httr)
-library(jsonlite)
-```
-
-#Functions for API Interactions
-
-The first function created will interact with the Public Assistance endpoint of the FEMA API. This data contiains numerical and categorical summary information on funcding projects that FEMA conducted geared towards public assistance. 
-
-```{r PAfun}
-PAdata <- function(statename = "all", countyname = "all") {
-  #pull the public assistance summaries from the Public assistance endpoint
+```{r IADTA}
+IAData <- function(statename = "all") {
   
   outputAPI <- fromJSON(
-    "https://www.fema.gov/api/open/v1/PublicAssistanceFundedProjectsSummaries" 
-    )
-  
-   APIData <- outputAPI$PublicAssistanceFundedProjectsSummaries
- 
-   #If the default state name of 'all' is not included, then make sure that the 
-   #chosen name is included, and filter, otherwise, print out an error
-   if(statename != "all"){
-     if(statename %in% APIData$state) {
-       output <- APIData %>% filter(state == statename)
-     }
-     else{
-       message <- print("PLease try again and enter a valid state name")
-       stop(message)
-     }
-     
-   }
-   else{
-     
-   }
-  
-   #If the default county name of 'all' is not included, then make sure that the 
-   #chosen name is included, and filter, otherwise, print out an error
-   if(countyname != "all"){
-    if(countyname %in% APIData$county) {
-      output <- APIData %>% filter(county == countyname)
+  "https://www.fema.gov/api/open/v2/HousingAssistanceOwners" 
+  )
+
+  APIData <- outputAPI$HousingAssistanceOwners %>%
+    rename("stateabb"=state) %>%
+    mutate(state = state.name[match(stateabb,state.abb)])
+  output <- APIData
+
+  #If the default state name of 'all is not included, then make sure that the 
+  #chosen name is included, and filter, otherwise, print out an error
+  if(statename != "all"){
+    if(statename %in% APIData$state) {
+    output <- APIData %>% filter(state == statename)
     }
-     else{ message <- print("PLease try again and enter a valid county name")
-     stop(message)
-     }
-     
-   }
-   else{
-     
-   }
+  
+  else if( statename %in% APIData$zipCode) {
+    
+    #Initial URL for the API 
+    URL1 <- "https://www.fema.gov/api/open/v2/" 
+    
+    #Extended endpoint with the zip code filter
+    endpoint <- "HousingAssistanceOwners?$filter=zipCode%20eq"
+    
+    #final URL that will putll the above data 
+    finURL <- paste0(URL1, endpoint,paste('%20%27',statename,'%27',sep=""),sep="")
+    
+    #Object that creates communicates to the FEMA API
+    outputAPI <- fromJSON(finURL)
+    
+    #Finally, these objects create the dataset for the API Data
+    output <- outputAPI$HousingAssistanceOwners
+  }
+  else if( statename %in% APIData$city) {
+    
+    #Initial URL for the API 
+    URL1 <- "https://www.fema.gov/api/open/v2/" 
+    
+    #Extended endpoint with the zip code filter
+    endpoint <- "HousingAssistanceOwners?$filter=city%20eq"
+    
+    #final URL that will putll the above data 
+    finURL <- paste0(URL1, endpoint,paste('%20%27',statename,'%27',sep=""),sep="")
+    
+    #Object that creates communicates to the FEMA API
+    outputAPI <- fromJSON(finURL)
+    
+    #Finally, these objects create the dataset for the API Data
+    output <- outputAPI$HousingAssistanceOwners
+  }
+  
+  else if(length(statename) == 1) {
+    short <- state.name[match(statename,state.abb)]
+    
+    #Initial URL for the API 
+    URL1 <- "https://www.fema.gov/api/open/v1/" 
+    
+    #Extended endpoint with the county filter
+    endpoint <- "PublicAssistanceFundedProjectsSummaries?$filter=state%20eq"
+    
+    #final URL that will putll the above data 
+    finURL <- paste0(URL1, endpoint,paste('%20%27',short,'%27',sep=""),sep="")
+    
+    #Object that creates communicates to the FEMA API
+    outputAPI <- fromJSON(finURL)
+    
+    #Finally, these objects create the dataset for the API Data
+    output <- outputAPI$PublicAssistanceFundedProjectsSummaries
+  }
+  
+else{
+  
+}
+  } 
   return(output)
 }
-
-PAdata(statename="Texas",countyname = "Uvalde")
-
 ```
 
+Below is an output example of the data for a zip code in Arkansas
 
-
+```{r output}
+IAData('99776')
+```
