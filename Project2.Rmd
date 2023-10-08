@@ -1,0 +1,108 @@
+---
+title: "Project 2: Creating Vignettes for API's"
+author: "Angelice Floyd"
+date: "2023-10-07"
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This line of code creates the render function for R to be able to run wihout hitting the "Knit" button. 
+
+```{r rndr, eval = FALSE, echo = FALSE}
+rmarkdown::render("Project2.Rmd", 
+              output_format = "github_document", 
+              output_options = list(
+                name_value_pairs = "value", 
+                toc = TRUE,
+                toc_depth = 4, 
+                number_of_sections = TRUE, 
+                df_print = "paged", 
+                or_something = TRUE
+                )
+              )
+```
+
+  * Intro and Requirements   
+  * Functions for API Interaction  
+    * Function1  
+    * Function2  
+    * Function3  
+    * Function4  
+    * Function5  
+    * Function6  
+  * Data Exploration  
+  * Wrap- Up  
+
+
+#Introduction and Requirements 
+
+## Introduction 
+
+This project creates a vignette for reading and summarizing baseball statistics from a FEMA ( Federal Emergency Management Associate) API. The first section will consist of pulling in all of the necessary libraries needed to run the R program, contact the API from the MLB, create the exploratory data analysis from the data. The second sectino will create the functions for interacting with the API ( INSERT WICH PORTIONS OF THE OPTIONS THE USER CAN CHOOSE HERE ). The Third sectio will use the data from the API function interaction for some exploratory data analysis. Finally, there will be a wrap up to summarize what was done in the vignette.  
+
+## Requirements 
+
+This section loads the package required for interacting with the FEMA API, manipulating the data, and conducting exploratory data analysis.
+
+```{r lib, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(httr)
+library(jsonlite)
+```
+
+#Functions for API Interactions
+
+The first function created will interact with the Public Assistance endpoint of the FEMA API. This data contiains numerical and categorical summary information on funcding projects that FEMA conducted geared towards public assistance. 
+
+```{r PAfun}
+PAdata <- function(statename = "all", countyname = "all") {
+  #pull the public assistance summaries from the Public assistance endpoint
+  
+  outputAPI <- fromJSON(
+    "https://www.fema.gov/api/open/v1/PublicAssistanceFundedProjectsSummaries" 
+    )
+  
+   APIData <- outputAPI$PublicAssistanceFundedProjectsSummaries
+ 
+   #If the default state name of 'all' is not included, then make sure that the 
+   #chosen name is included, and filter, otherwise, print out an error
+   if(statename != "all"){
+     if(statename %in% APIData$state) {
+       output <- APIData %>% filter(state == statename)
+     }
+     else{
+       message <- print("PLease try again and enter a valid state name")
+       stop(message)
+     }
+     
+   }
+   else{
+     
+   }
+  
+   #If the default county name of 'all' is not included, then make sure that the 
+   #chosen name is included, and filter, otherwise, print out an error
+   if(countyname != "all"){
+    if(countyname %in% APIData$county) {
+      output <- APIData %>% filter(county == countyname)
+    }
+     else{ message <- print("PLease try again and enter a valid county name")
+     stop(message)
+     }
+     
+   }
+   else{
+     
+   }
+  return(output)
+}
+
+PAdata(statename="Texas",countyname = "Uvalde")
+
+```
+
+
+
