@@ -4,10 +4,17 @@ author: "Angelice Floyd"
 date: "2023-10-08"
 urlcolor: blue
 ---
+Contens
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+ * Intro and Requirements   
+ * Functions for API Interaction  
+    * `PAData`
+    * `PNUMData` 
+    * `IAData`  
+    * `EMPData`  
+  * Data Exploration  
+  * Wrap- Up  
+
 
 This line of code creates the render function for R to be able to run wihout hitting the "Knit" button. 
 
@@ -25,17 +32,7 @@ rmarkdown::render("Project2.Rmd",
               )
 ```
 
-  * Intro and Requirements   
-  * Functions for API Interaction  
-    * PAData
-    * PNUMData 
-    * Function3  
-    * Function4  
-    * Function5  
-    * Function6  
-  * Data Exploration  
-  * Wrap- Up  
-
+ 
 
 #Introduction and Requirements 
 
@@ -87,6 +84,7 @@ PAdata <- function(statename = "all") {
   return(output)
 }
 
+PAData()
 ```
 
 This next set of code modifies the endpoint to filter on pulling data from either the full state name, the  county name of the region, or the two letter abbreviated state name. Thus, the user could type in state name and the data filters on the state name value. However, if the user chooses to type in either the two letter state name or the county name, the API modifies to filter on the given value. Further, all of this can be typed in as one string under statename, where the default is all state values. Finally, the output pulls all of the relevant variables that will be used in the Exploratory Data analysis. 
@@ -154,6 +152,7 @@ PNUMData <- function(statename = "all") {
  return(finoutput)
 }
 
+PNUMData()
 ```
 
 Below is an output example for the county of Lamar in Alabama. 
@@ -256,3 +255,148 @@ Below is an output example of the data for a zip code in Arkansas
 ```{r output}
 IAData('99776')
 ```
+
+## Emergency Management Performance Grant endpoint
+
+The final interaction with the FEMA API will be connecting to the Emergency Management Performance Grant endpoint.This produces a dataset that shows the amount of grant funding provided to regional emergency management agencies in order to assist them with  their emergency preparedness initiatives over a specific length of time.  The modifications to the API will be the state, and the beginning date of the project funded, as it will be interesting to be able to filter the data pertaining to the times where different states conducted their emergency preparedness projects. 
+
+First, this set of code creates a list of possible combinations of state names and start dates for reference. 
+
+```{r indx}
+
+outputAPI <- fromJSON(
+  "https://www.fema.gov/api/open/v2/EmergencyManagementPerformanceGrants" 
+)
+
+APIDataIN <- outputAPI$EmergencyManagementPerformanceGrants %>%
+  mutate(stateabb = state.abb[match(state,state.name)]) %>%  separate(projectStartDate,c("startdate","starttime"),sep = "T",convert=TRUE, remove = FALSE) %>% separate(projectEndDate,c("enddate","endtime"), sep = "T", convert = TRUE, remove = FALSE) %>% unite("index",state,startdate, remove = FALSE)
+
+
+print(tibble(index = unique(APIDataIN$index)) %>% separate(index,c("state","startdate"),sep="_") %>% mutate(stateabb = state.abb[match(state,state.name)]))
+```
+
+Next, this set of code creates a function that pulls the Emergency Management Performance Grant data from the endpoint. There are some options for the user.  
+  * Enter  nothing -`EMPData()`- and all of the data ( unfiltered ) is pulled from the endpoint.  
+  * Enter the state name ( full or abbreviated), but not the start date - `EMPData(statename = "AL")`, then if the full name is give, the filtered data from the first bullet is output, but if the abbreviated version is given, the full name of the abbreviated version is found and the endpoint is modified to pull from the converted abbreviation and the data fror the corresponding state with all possible dates is produced.   
+  * Eter the start date but not the state name `EMPData(stdate = "2014-10-01")` ,the endpoint, the startdate is first parsed from the projectStartDate variable ( since this variable includes both the startdate and a starttime), united with the starttime, and then endpoint is modified to find the re-combined value within the projectStartDate.  
+  * If both the state name and start date are entered `EMPData(stdate = "2014-10-01",statename = "AL")`, the program follows the logic of the previous two bullets, and the endpoint is modified to serach for the two values.  
+  
+```{r EMPFunction}
+EMPData <- function(statename = "all",stdate = "all") {
+  
+  outputAPI <- fromJSON(
+    "https://www.fema.gov/api/open/v2/EmergencyManagementPerformanceGrants" 
+  )
+  
+  APIDataIN <- outputAPI$EmergencyManagementPerformanceGrants %>%
+    mutate(stateabb = state.abb[match(state,state.name)]) %>%  separate(projectStartDate,c("startdate","starttime"),sep = "T",convert=TRUE, remove = FALSE) %>% separate(projectEndDate,c("enddate","endtime"), sep = "T", convert = TRUE, remove = FALSE)
+  
+  output <- APIDataIN
+  
+  #If the default state name of 'all is not included, then make sure that the 
+  #chosen name is included, and filter, otherwise, print out an error
+  if(statename != "all" & stdate == "all"){
+    if(statename %in% APIDataIN$state) {
+      output <- APIData %>% filter(state == statename)
+    }
+    
+    else if(length(statename) == 1) {
+      short <- state.name[match(statename,state.abb)]
+      
+      #Initial URL for the API 
+      URL1 <- "https://www.fema.gov/api/open/v2/" 
+      
+      #Extended endpoint with the county filter
+      endpoint <- "EmergencyManagementPerformanceGrants?$filter=state%20eq"
+      
+      #final URL that will putll the above data 
+      finURL <- paste0(URL1, endpoint,paste('%20%27',short,'%27',sep=""),sep="")
+      
+      #Object that creates communicates to the FEMA API
+      outputAPI <- fromJSON(finURL)
+      
+      #Finally, these objects create the dataset for the API Data
+      output <- outputAPI$EmergencyManagementPerformanceGrants %>%  separate(projectStartDate,c("startdate","starttime"),sep = "T",convert=TRUE, remove = FALSE) %>% separate(projectEndDate,c("enddate","endtime"), sep = "T", convert = TRUE, remove = FALSE)
+    }
+  } 
+  else if(stdate != "all" & statename == "all") {
+    dateval <- paste0(stdate,"T",APIDataIN$starttime[1])
+    
+    #Initial URL for the API 
+    URL1 <- "https://www.fema.gov/api/open/v2/" 
+    
+    #Extended endpoint with the county filter
+    endpoint <- "EmergencyManagementPerformanceGrants?$filter=projectStartDate%20eq"
+    
+    #final URL that will putll the above data 
+    finURL <- paste0(URL1, endpoint,paste('%20%27',dateval,'%27', sep=""),sep="")
+    
+    #Object that creates communicates to the FEMA API
+    outputAPI <- fromJSON(finURL)
+    
+    #Finally, these objects create the dataset for the API Data
+    output <- outputAPI$EmergencyManagementPerformanceGrants %>%  separate(projectStartDate,c("startdate","starttime"),sep = "T",convert=TRUE, remove = FALSE) %>% separate(projectEndDate,c("enddate","endtime"), sep = "T", convert = TRUE, remove = FALSE)
+    
+  }
+    else if(stdate != "all" & statename != "all"){
+      if(statename %in% APIDataIN$state){
+        dateval <- paste0(stdate,"T",APIData$starttime[1])
+      
+      #Initial URL for the API 
+      URL1 <- "https://www.fema.gov/api/open/v2/" 
+      
+      #Extended endpoint with the county filter
+      endpoint <- "EmergencyManagementPerformanceGrants?$filter=projectStartDate%20eq"
+      
+      #final URL that will putll the above data 
+      finURL <- paste0(URL1, endpoint,paste('%20%27',dateval,'%27%20and%20state%20eq%20%27',statename,"%27",sep=""),sep="")
+      
+      
+      #Object that creates communicates to the FEMA API
+      outputAPI <- fromJSON(finURL)
+      
+      #Finally, these objects create the dataset for the API Data
+      output <- outputAPI$EmergencyManagementPerformanceGrants %>%  separate(projectStartDate,c("startdate","starttime"),sep = "T",convert=TRUE, remove = FALSE) %>% separate(projectEndDate,c("enddate","endtime"), sep = "T", convert = TRUE, remove = FALSE)
+      
+    }
+  else if(length(statename)==1){
+    #Take the start date given value and convert it into the Project start Date format
+    
+    dateval <- paste0(stdate,"T",APIDataIN$starttime[1])
+    long <- state.name[match(statename,state.abb)]
+    
+    #Initial URL for the API 
+    URL1 <- "https://www.fema.gov/api/open/v2/" 
+    
+    #Extended endpoint with the county filter
+    endpoint <- "EmergencyManagementPerformanceGrants?$filter=projectStartDate%20eq"
+    
+    #final URL that will putll the above data 
+    finURL <- paste0(URL1, endpoint,paste('%20%27',dateval,'%27%20and%20state%20eq%20%27',long,"%27",sep=""),sep="")
+    
+    #Object that creates communicates to the FEMA API
+    outputAPI <- fromJSON(finURL)
+    
+    #Finally, these objects create the dataset for the API Data
+    output <- outputAPI$EmergencyManagementPerformanceGrants
+  }
+}
+  return(output)
+}
+
+```
+
+Below are examples of the options available to the user for this function. 
+
+```{r options, eval = FALSE}
+EMPData()
+EMPData(statename = "AK")
+EMPData(statename = "Alaska")
+EMPData(stdate = "2014-07-01")
+EMPData(stdate = "2014-07-01",statename = "AK")
+EMPData(stdate = "2014-07-01",statename = "Alaska")
+```
+
+## Data Exploration
+
+For the Data Exploration, There a few things that I am interested in exploring. For the 
