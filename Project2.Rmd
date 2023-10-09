@@ -52,7 +52,7 @@ library(jsonlite)
 
 #Functions for API Interactions
 
-## Public Assistance Funded Projects Endpoint
+## [Public Assistance Funded Projects Endpoint](https://www.fema.gov/openfema-data-page/public-assistance-funded-project-summaries-v1)
 
 The first function created will interact with the Public Assistance endpoint of the FEMA API. This data contiains numerical and categorical summary information on funcding projects that FEMA conducted geared towards public assistance. The next endpoint of this API contains the abbreviated form of the state name. Thus, for consistency, a two letter state abbreviation was added. 
 
@@ -84,7 +84,7 @@ PAdata <- function(statename = "all") {
   return(output)
 }
 
-PAData()
+PAdata()
 ```
 
 This next set of code modifies the endpoint to filter on pulling data from either the full state name, the  county name of the region, or the two letter abbreviated state name. Thus, the user could type in state name and the data filters on the state name value. However, if the user chooses to type in either the two letter state name or the county name, the API modifies to filter on the given value. Further, all of this can be typed in as one string under statename, where the default is all state values. Finally, the output pulls all of the relevant variables that will be used in the Exploratory Data analysis. 
@@ -161,7 +161,7 @@ Below is an output example for the county of Lamar in Alabama.
 PNUMData("Lamar")
 ```
 
-## Individual Assistance for Homeowners 
+## [Individual Assistance for Homeowners](https://www.fema.gov/openfema-data-page/housing-assistance-program-data-owners-v2)
 
 This next API Endpoint yeilds financial data from the FEMA Housing Assistance Program for Homeowners by zip code, county, city, and state for registered states. Since, I will not be excluding any data for the numerical analysis, all of the modifications and connections are doine in the same function.The first portion of the code is used to produce an initial connection to the  `HousingAssistanceOwners` API. This brings in the data for all of the states, counties, zip codes and cities- this is the default setting for the statename input. If the user chooses not to incorporate all of the regional based data, there are some options that they could type in which correspond to the following :  
   * Two letter state abbreviation: ex: AL  
@@ -256,7 +256,7 @@ Below is an output example of the data for a zip code in Arkansas
 IAData('99776')
 ```
 
-## Emergency Management Performance Grant endpoint
+## [Emergency Management Performance Grant](https://www.fema.gov/openfema-data-page/emergency-management-performance-grants-v2)
 
 The final interaction with the FEMA API will be connecting to the Emergency Management Performance Grant endpoint.This produces a dataset that shows the amount of grant funding provided to regional emergency management agencies in order to assist them with  their emergency preparedness initiatives over a specific length of time.  The modifications to the API will be the state, and the beginning date of the project funded, as it will be interesting to be able to filter the data pertaining to the times where different states conducted their emergency preparedness projects. 
 
@@ -397,6 +397,73 @@ EMPData(stdate = "2014-07-01",statename = "AK")
 EMPData(stdate = "2014-07-01",statename = "Alaska")
 ```
 
-## Data Exploration
+# Data Exploration
 
-For the Data Exploration, There a few things that I am interested in exploring. For the 
+This section will do some basic exploratory data analysis for the data from each endpoint. 
+
+## Public Assistance Funded Projects 
+
+Before the EDA is performed, there were some questions that I had. Which disaster type corresponded with the highest amount of federal obligated amount of funding? Which distaster type held the higher amount of frequencies per registered state? Were there more projects conducted for grants in certain states? Did the level of educational applications ( whether or not the primary reason for the application was for education purposes , TRUE = Yes, FALSE = No) correspond to higher or lower amounts of grant funding (Federal Obligate Amount Variable) ? Is there a relatiionship between higher levels of funding and higher numbers of projects. 
+
+### Data pulls 
+
+First, I will conduct a pull of the PNUMData where the education Applicant value is TRUE and the disaster type is a Sver storm or Flood. 
+
+```{r dtapull1}
+numdata <- PNUMData()
+numdata %>% filter(educationApplicant==TRUE & incidentType %in% c('Severe Storm','Flood'))
+```
+
+Second, the below code pulls the PNUMData where the Federal grant amount is greater than $1,000,000 and the Number of projects is less than 10. I was surprised that there were so many instances were there were very few numbers of Projects that corresponded to large grants. It would be interesting to see what those projects consisted of. 
+
+```{r dtapull2}
+numdata %>% filter(federalObligatedAmount > 1000000 & numberOfProjects < 10 )
+```
+
+### Contingency Tables 
+
+To explore which disaster type corresponded with the highest frequncies by state, below will output a contingency table of IncedentType by state. What I found interesting about this data was that severe storms held the highest level of frequencies for each state. Furtermore, Iowa and the southern states such as Alabama, and Tennessee helwere the states with the highest frequencies geared towards funding for server storms projects. Maybe there is a climate component that contributed to that. 
+
+```{r conttbl1}
+table(numdata$state,numdata$incidentType)
+```
+
+The second contingency table explores how the frequency of the levels of educationApplicants corresponded to the states. As can be seen in the results, the FALSE level ( instances where the application was not filled out solely for educational purposes) was held the highest amount of frequencies than the cases where the purpose was solely educatoinal. 
+
+```{r conttbl2}
+table(numdata$state,numdata$educationApplicant)
+```
+
+### Numerical Summaries
+
+To Explore the question for whether a disaster type corresponded to a larger level of funding, the below code will display the mean, max, and min values of funding for each storm type. From the results, it can be seen that the Tornado storm type obtained the highest average funding out of all of the storm types, it also had the highest maximum amount of funding, which would make sense seeing that the damage done from a tornado is highly catastrophic, so larger grant funding to address issues surrounding that type of disaster would be reasonable. 
+
+```{r num1}
+numdata %>% summarize(MinFunding = min(federalObligatedAmount),MeanFunding = mean(federalObligatedAmount), MaxFunding = max(federalObligatedAmount), .by=incidentType)
+```
+
+To explore the question of whether there more projects conducted for grants in certain states, below is a table of the minimum, average and maximum number of projects in each state. Based on the results, even through Texas has the highest maximum number of projects, North Dakota held the higest average amount of projects ( though marginally higher than Texas). 
+
+```{r num2}
+numsum <- numdata %>% summarize(MinNumProjects = min(numberOfProjects),MeanNumProjects = mean(numberOfProjects), MaxFNumProjects = max(numberOfProjects), .by=state) 
+numsum %>% arrange(desc(MeanNumProjects))
+```
+
+### Plots 
+
+To answer the question for which the education applicant level corresponded the highest level of funding, below will show a bar graph of funding per incident for each eaducation level. As can be seen in each of the disaster types, the educationalApplicant level of False, where the purpose of the application was not solely for educational purposes obtained much higher amounts of funding than the level where the purpose was solely for education. However, it was interesting to see that the Tornado incident type had the highese level of funding for educational applicants out of all of the incident types. 
+
+```{r plot1}
+ ggplot(data=numdata, aes(x=incidentType,y=federalObligatedAmount, fill =educationApplicant )) +
+  geom_bar(stat = "identity",position= position_dodge()) + 
+  labs(x = "Disaster Type", y= "Amount of Funding", title= "Amount of PA Funding by Disaster Type Colored by educationApplicant level") 
+```
+
+To answer the question of whether there is a relationship between amounts of funding and numbers of projects, below is a scatter plot. After separating the results by incident, Flooding seemed to have the clearest relationship between the number of projects and the funding- in which it seems like there is a small ( almost negligible) positive relationship between the number of projects and grant amount, whereas, for the other incident types, most of the data is clustered at the lower , with a few outliers that are at the middle level and correspond to higher levels of funding, as can be seen in the Severe storm plot 
+
+```{r scatter1}
+ ggplot(data= numdata, aes(x=numberOfProjects,y= federalObligatedAmount)) +
+  geom_point(position= "identity") + 
+  labs(x = "Number of Prjects", y= "Public Assistance Grant Amount", title= "Relationship Between Projects and Funding") +
+  facet_wrap(~incidentType)
+```
