@@ -7,7 +7,7 @@ urlcolor: blue
 
 
 ```{r rndr, eval = FALSE, echo= FALSE}
-rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io.git/Project2.Rmd',
+rmarkdown::render(input = 'Project2.Rmd',
               output_file = "README.md", 
               output_format = "github_document", 
               output_options = list(
