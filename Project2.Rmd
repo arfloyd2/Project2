@@ -1,20 +1,9 @@
 ---
 title: "Project 2: Creating a Vignette for API Interactions"
 author: "Angelice Floyd"
-date: "2023-10-08"
+date: "2023-10-10"
 urlcolor: blue
 ---
-Contens
-
- * Intro and Requirements   
- * Functions for API Interaction  
-    * `PAData`
-    * `PNUMData` 
-    * `IAData`  
-    * `EMPData`  
-  * Data Exploration  
-  * Wrap- Up  
-
 
 This line of code creates the render function for R to be able to run wihout hitting the "Knit" button. 
 
@@ -32,13 +21,22 @@ rmarkdown::render("Project2.Rmd",
               )
 ```
 
- 
+Contents  
 
-#Introduction and Requirements 
+* Intro and Requirements   
+ * Functions for API Interaction  
+    * `PAData`  
+    * `PNUMData`   
+    * `IAData`    
+    * `EMPData`    
+  * Data Exploration    
+  * Wrap- Up    
 
-## Introduction 
+#Introduction and Requirements   
 
-This project creates a vignette for reading and summarizing data from a FEMA ( Federal Emergency Management Associate) API. The first section will consist of pulling in all of the necessary libraries needed to run the R program, contact the API from the FEMA, create the exploratory data analysis from the data. The second section will create the functions for interacting with the API. The Third section will use the data from the API function interaction for some exploratory data analysis. Finally, there will be a wrap up to summarize what was done in the vignette.  
+## Introduction   
+
+This project creates a vignette for reading and summarizing data from a FEMA ( Federal Emergency Management Agency) API. The first section will consist of pulling in all of the necessary libraries needed to run the R program, contact the API from the FEMA webiste, and create the exploratory data analysis from the data. The second section will create the functions for interacting with the API. The Third section will use the data from the API function interaction for some exploratory data analysis. Finally, there will be a wrap up to summarize what was done in the vignette.  
 
 ## Requirements 
 
@@ -54,7 +52,7 @@ library(jsonlite)
 
 ## [Public Assistance Funded Projects Endpoint](https://www.fema.gov/openfema-data-page/public-assistance-funded-project-summaries-v1)
 
-The first function created will interact with the Public Assistance endpoint of the FEMA API. This data contiains numerical and categorical summary information on funcding projects that FEMA conducted geared towards public assistance. For consistency and use in later analysis, the two state abbreviation was created. This function is designed to filter the data by full state name. Thus, if a string that is not a valid state name ( or the name is not available) is entered, an error message will appear prompting you to enter a valid or available state name. One thing that I found interesting about this data was that a large amount of participants were southern states. Thus, some of the main states in the dataset were Texas, Alabama, and Tennessee> there are some states like Colorado and North Dakota, but the majority are southern states. 
+The first function created interacts with the Public Assistance endpoint of the FEMA API. This data contiains numerical and categorical summary information on funding projects that FEMA conducted geared towards public assistance. For consistency and use in later analysis, the two state abbreviation was created. This function is designed to filter the data by full state name. Thus, if a string that is not a valid state name ( or the name is not available) is entered, an error message will appear prompting you to enter a valid or available state name. One thing that I found interesting about this data was that a large amount of participants were southern states. Thus, some of the main states in the dataset were Texas, Alabama, and Tennessee> there are some states like Colorado and North Dakota, but the majority are southern states. 
 
 ```{r PAfun}
 PAdata <- function(statename = "all") {
@@ -164,7 +162,7 @@ PNUMData("Lamar")
 ## [Individual Assistance for Homeowners](https://www.fema.gov/openfema-data-page/housing-assistance-program-data-owners-v2)
 
 This next API Endpoint produces financial data from the FEMA Housing Assistance Program for Homeowners by zip code, county, city, and state for registered states. Since, I will not be excluding any data for the numerical analysis, all of the modifications and connections are done in the same function.The first portion of the code is used to produce an initial connection to the  `HousingAssistanceOwners` API. This brings in the data for all of the states, counties, zip codes and cities- this is the default setting for the statename input. If the user chooses not to incorporate all of the regional based data, there are some options that they could type in which correspond to the following :  
-  * Two letter state abbreviation: ex: AL  
+  * Two letter state abbreviation if the state is registered: ex: AL  
   * specific full state name  
   * Zip code if the region is registered and in the dataset : This has to be in a character string.  
   * City: must be in all capitals. 
@@ -423,7 +421,7 @@ numdata %>% filter(federalObligatedAmount > 1000000 & numberOfProjects < 10 )
 
 ### Contingency Tables 
 
-To explore which disaster type corresponded with the highest frequncies by state, below will output a contingency table of IncidentType by state. What I found interesting about this data was that the severe storms disaster  held the highest level of frequencies for each state. Furtermore, Iowa and the southern states such as Alabama, and Tennessee were the states with the highest frequencies geared towards funding for server storms projects. Maybe there is a climate component that contributed to that. 
+To explore which disaster type corresponded with the highest frequncies by state, below will output a contingency table of IncidentType by state. What I found interesting about this data was that the severe storms disaster  held the highest level of frequencies for each state. Furtermore, Iowa and the southern states such as Alabama, and Tennessee were the states with the highest frequencies geared towards funding for severe storms projects. Maybe there is a climate component that was the contributing factor. 
 
 ```{r conttbl1}
 table(numdata$state,numdata$incidentType)
@@ -452,7 +450,7 @@ numsum %>% arrange(desc(MeanNumProjects))
 
 ### Plots 
 
-To answer the question for which the education applicant level corresponded the highest level of funding, below will show a bar graph of funding per incident for each eaducation level. As can be seen in each of the disaster types, the educationalApplicant level of False, where the purpose of the application was not solely for educational purposes obtained much higher amounts of funding than the level where the purpose was solely for education. However, it was interesting to see that the Tornado incident type had the highese level of funding for educational applicants out of all of the incident types. 
+To answer the question for which the education applicant level corresponded the highest level of funding, below will show a bar graph of funding per incident for each eaducation level. As can be seen in each of the disaster types, the educationalApplicant level of False, where the purpose of the application was not solely for educational purposes, obtained more funding than the level where the purpose was solely for education. However, it was interesting to see that the Tornado incident type had the highest level of funding for educational applicants out of all of the incident types. 
 
 ```{r plot1}
  ggplot(data=numdata, aes(x=incidentType,y=federalObligatedAmount, fill =educationApplicant )) +
@@ -460,7 +458,7 @@ To answer the question for which the education applicant level corresponded the 
   labs(x = "Disaster Type", y= "Amount of Funding", title= "Amount of PA Funding by Disaster Type Colored by educationApplicant level") 
 ```
 
-To answer the question of whether there is a relationship between amounts of funding and numbers of projects, below is a scatter plot. After separating the results by incident, Flooding seemed to have the clearest relationship between the number of projects and the funding- in which it seems like there is a small ( almost negligible) positive relationship between the number of projects and grant amount, whereas, for the other incident types, most of the data is clustered at the lower end , with a few outliers that are at the middle level and correspond to higher levels of funding, as can be seen in the Severe storm plot. 
+To answer the question of whether there is a relationship between amounts of funding and numbers of projects, below is a scatter plot. After separating the results by incident, Flooding seemed to have the clearest relationship between the number of projects and the funding- in which it seems like there is a small ( almost negligible) positive relationship between the number of projects and grant amount. Whereas, for the other incident types, most of the data is clustered at the lower end , with a few outliers that are at the middle level and correspond to higher levels of funding, as can be seen in the Severe Storm plot. 
 
 ```{r plot2}
  ggplot(data= numdata, aes(x=numberOfProjects,y= federalObligatedAmount)) +
@@ -471,11 +469,11 @@ To answer the question of whether there is a relationship between amounts of fun
 
 ## Individual Assistance for Homeowners 
 
-This data contains information about the number of applicants who had disaster damage at the levels of no damage, damage between $1.00 - $10,000.00 , between $10,001-$20,000, between $20,001-$30,000 and above $30,000. Thus, I would be interested to see what are the counts of applicants for each of those levels at each state. I would also like to see some summary statistics for the amount of funding for repair/Replace, rental and other needs grants that were provided and how that funding was distributed across the states. Third, I would like to see if there was a relationship between the total amount of FEMA aplicants who received an inspection and the total damage recorded by FEMA at the time of the inspection. Finally, It would be interesting to see the which states had the highest amount of valid registrations. 
+This data contains information about the number of applicants who had disaster damage at the levels of no damage, damage between $1.00 - $10,000 , between $10,001-$20,000, between $20,001-$30,000 and above $30,000. Thus, I would be interested to see what are the counts of applicants for each of those levels at each state. I would also like to see some summary statistics for the amount of funding for repair/Replace, rental and other needs grants that were provided and how that funding was distributed across the states. Third, I would like to see if there was a relationship between the total amount of FEMA aplicants who received an inspection and the total damage recorded by FEMA at the time of the inspection. Finally, It would be interesting to see the which states had the highest amount of valid registrations. 
 
 ### Numerical Summaries
 
-To see the frequncies of applicants with disaster damange at the variious price points, below shows the sum of the fields in each state/territory. Not surprisingly, Texas had the bulk of the funding, but surprisingly, the second largest was Guam, which is a US territory.
+To see the frequncies of applicants with disaster damange at the variious price points, below shows the sum of the fields in each state/territory. Not surprisingly, Texas had the bulk of the funding,  However, it was interesting to see that the second largest amount of funding went to Guam, which is a US territory.
 
 ```{r sumlevels}
 numdata <- IAData() 
@@ -484,7 +482,7 @@ numdata %>% summarize(NoDamage = sum(noFemaInspectedDamage), Btwn1and10000 = sum
 
 ```
 
-Below shows the sum, mean and maximum values of repar/replace, rental and other needs funding for each state. It can be seen that, across the asistance types, much of the funding went to the sourthern regions. It is also interesting to see that he majority of these participants for this housing funding came from southern regions. 
+Below shows the total, mean and maximum values of repar/replace, rental and other needs funding for each state. It can be seen that, across the assistance types, much of the funding went to the sourthern regions. It is also interesting to see that the majority of these participants for this housing funding came from southern regions. 
 
 ```{r stats}
 
@@ -494,7 +492,7 @@ numdata %>% summarize(RepairSum = sum(repairReplaceAmount), RepairMean = mean(re
 
 ### Plots 
 
-Next, to see if there was a relationship between total amount of applicants and total amount of damage recorded, below shows a scatter plot bwteen the two along with a best fit line of the data.There was a small positive relationship between the number of inspections and the amount of damage. Furthermore, the line of best fit seems to have been impacted by an outlier with a high number of inspections and high amount of damage. 
+Next, to see if there was a relationship between total amount of applicants and total amount of damage recorded, below shows a scatter plot between the two along with a best fit line of the data.There was a small positive relationship between the number of inspections and the amount of damage. Furthermore, the line of best fit seems to have been impacted by an outlier with a high number of inspections and high amount of damage. 
 
 ```{r relation}
 ggplot(data = numdata) + 
@@ -535,7 +533,7 @@ table(numdata$state,numdata$Year)
 
 ```
 
-To see how much funding was given out per start year, below will show a table of the total funding per year. This summary agrees with the top contingency table where the most funding came from 2013 and 2014.  
+To see how much funding was given out per start year, below will show data for the total funding per year. This summary agrees with the above contingency table where the most funding came from 2013 and 2014.  
 
 ```{r totfunds}
 numdata %>% summarize(TotalFunds = sum(fundingAmount), .by = Year)
@@ -565,4 +563,4 @@ ggplot(numdata2)+
 
 # Wrap Up 
 
-In summary, I hope that this vignette provides and idea of how to connect to data from various endopoints of an API and to perform basic exploratory data analysis. There is a multitude of APIs to work with, but the FEMA data seemed to pull my interest, as it contained some important data on federal assistance US states in preparation of and response to disasters - especially in light of some of the major natural disasters that have occured over the past years. 
+In summary, I hope that this vignette provides and idea of how to connect to data from various endopoints of an API and to perform basic exploratory data analysis. There is a multitude of APIs to work with, but the FEMA data seemed to pull my interest, as it contained some important data on federal assistance to US states in preparation of and response to disasters - especially in light of some of the major natural disasters or severe weather occurances that have occured over the past years. 
