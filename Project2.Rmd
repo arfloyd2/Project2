@@ -1,19 +1,20 @@
 ---
 title: "Project 2: Creating a Vignette for API Interactions"
 author: "Angelice Floyd"
-date: "2023-10-10"
+date: "2023-10-11"
 urlcolor: blue
 ---
 
 This line of code creates the render function for R to be able to run wihout hitting the "Knit" button. 
 
-```{r rndr, eval = FALSE, echo = FALSE}
-rmarkdown::render("Project2.Rmd", 
+```{r rndr, eval = FALSE, echo= FALSE}
+rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io.git/Project2.Rmd',
+              output_file = "README.md", 
               output_format = "github_document", 
               output_options = list(
                 name_value_pairs = "value", 
                 toc = TRUE,
-                toc_depth = 4, 
+                toc_depth = 3, 
                 number_of_sections = TRUE, 
                 df_print = "paged", 
                 or_something = TRUE
@@ -549,16 +550,20 @@ numdata1 <-  EMPData() %>%
   
  ggplot(data=numdata1, aes(x=state,y=TotalFunds, )) +
   geom_bar(stat = "identity",position= position_dodge()) + 
-  labs(x = "State", y= "Amount of Funding", title= "Amount of Emergency Preparedness Funding by State")  
+  labs(x = "State", y= "Amount of Funding", title= "Amount of Emergency Preparedness Funding by State")
+ 
 ```
 
 Finally, since there was only one closeout year, I was interested to see how the data was distributed for smaller amounts of funding.
 
 ```{r hist}
 numdata2 <- numdata %>% filter(fundingAmount < 1000000)
-ggplot(numdata2)+ 
+
+ggplot(numdata2) + 
   geom_density(mapping=aes(x=fundingAmount, fill = reportingPeriod), position="identity") +
   labs(x = "Amount of Funding", title = "Smoothed Distribution of Funding")
+
+
 ```
 
 # Wrap Up 
