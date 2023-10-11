@@ -1,3 +1,10 @@
+---
+title: "Project 2: Creating a Vignette for API Interactions"
+author: "Angelice Floyd"
+date: "2023-10-11"
+urlcolor: blue
+---
+
 Project 2: Creating a Vignette for API Interactions
 ================
 Angelice Floyd
@@ -738,14 +745,6 @@ contingency table where the most funding came from 2013 and 2014.
 ``` r
 numdata %>% summarize(TotalFunds = sum(fundingAmount), .by = Year)
 ```
-
-<div data-pagedtable="false">
-
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Year"],"name":[1],"type":["chr"],"align":["left"]},{"label":["TotalFunds"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"2014","2":"89586933"},{"1":"2013","2":"50733926"},{"1":"2015","2":"1390771"},{"1":"2016","2":"1225"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-
-</div>
 
 ### Plots
 

@@ -1229,14 +1229,6 @@ projects were recorded in 2013 and 2014.</p>
 data for the total funding per year. This summary agrees with the above
 contingency table where the most funding came from 2013 and 2014.</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>numdata <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">TotalFunds =</span> <span class="fu">sum</span>(fundingAmount), <span class="at">.by =</span> Year)</span></code></pre></div>
-<div data-pagedtable="false">
-
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Year"],"name":[1],"type":["chr"],"align":["left"]},{"label":["TotalFunds"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"2014","2":"89586933"},{"1":"2013","2":"50733926"},{"1":"2015","2":"1390771"},{"1":"2016","2":"1225"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-
-</div>
-
 <h3 id="plots-2">Plots</h3>
 <p>We could see how much funding was provided per state. Below is a bar
 graph that shows how much funding was provided per state for funds
