@@ -1,7 +1,7 @@
 Project 2: Creating a Vignette for API Interactions
 ================
 Angelice Floyd
-2023-10-10
+2023-10-11
 
 - [Introduction](#introduction)
 - [Requirements](#requirements)
@@ -369,6 +369,21 @@ APIDataIN <- outputAPI$EmergencyManagementPerformanceGrants %>%
 
 print(tibble(index = unique(APIDataIN$index)) %>% separate(index,c("state","startdate"),sep="_") %>% mutate(stateabb = state.abb[match(state,state.name)]))
 ```
+
+    ## # A tibble: 81 × 3
+    ##    state          startdate  stateabb
+    ##    <chr>          <chr>      <chr>   
+    ##  1 Alabama        2014-10-01 AL      
+    ##  2 Alaska         2014-07-01 AK      
+    ##  3 Alaska         2014-10-01 AK      
+    ##  4 Alaska         2013-10-01 AK      
+    ##  5 American Samoa 2014-10-01 <NA>    
+    ##  6 Arizona        2014-10-01 AZ      
+    ##  7 Arkansas       2014-10-01 AR      
+    ##  8 Arkansas       2015-01-01 AR      
+    ##  9 California     2014-12-01 CA      
+    ## 10 California     2014-09-01 CA      
+    ## # ℹ 71 more rows
 
 Next, this set of code creates a function that pulls the Emergency
 Management Performance Grant data from the endpoint. There are some
