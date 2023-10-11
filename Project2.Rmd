@@ -5,7 +5,6 @@ date: "2023-10-11"
 urlcolor: blue
 ---
 
-This line of code creates the render function for R to be able to run wihout hitting the "Knit" button. 
 
 ```{r rndr, eval = FALSE, echo= FALSE}
 rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io.git/Project2.Rmd',
@@ -15,8 +14,8 @@ rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /
                 name_value_pairs = "value", 
                 toc = TRUE,
                 toc_depth = 3, 
-                number_of_sections = TRUE, 
-                df_print = "paged", 
+                number_of_sections = FALSE, 
+                df_print = "tibble", 
                 or_something = TRUE
                 )
               )
@@ -72,7 +71,8 @@ PAdata <- function(statename = "all") {
   return(output)
 }
 
-PAdata()
+data <- PAdata()
+print(head(data),30)
 ```
 
 This next set of code modifies the endpoint to filter on pulling data from either the full state name, the  county name of the region, or the two letter abbreviated state name. Thus, the user could type in state name and the data filters on the state name value. However, if the user chooses to type in either the two letter state name or the county name, the API modifies to filter on the given value. Further, all of this can be typed in as one string under statename, where the default is all state values. Finally, the output pulls all of the relevant variables that will be used in the Exploratory Data analysis. 
@@ -140,13 +140,15 @@ PNUMData <- function(statename = "all") {
  return(finoutput)
 }
 
-PNUMData()
+data1 <- PNUMData()
+
+print(head(data1), 30)
 ```
 
 Below is an output example for the county of Lamar in Alabama. 
 
 ```{r outexmple}
-PNUMData("Lamar")
+print(PNUMData("Lamar"))
 ```
 
 ## [Individual Assistance for Homeowners](https://www.fema.gov/openfema-data-page/housing-assistance-program-data-owners-v2)
@@ -236,13 +238,16 @@ else{
   } 
   return(output)
 }
-IAData()
+
+data3 <- IAData()
+
+print(head(data3), 30)
 ```
 
 Below is an output example of the data for a zip code in Arkansas
 
 ```{r output}
-IAData('99776')
+print(IAData('99776'))
 ```
 
 ## [Emergency Management Performance Grant](https://www.fema.gov/openfema-data-page/emergency-management-performance-grants-v2)
@@ -373,6 +378,9 @@ EMPData <- function(statename = "all",stdate = "all") {
   return(output)
 }
 
+data4 <- EMPData()
+
+print(head(data4),30)
 ```
 
 Below are examples of the options available to the user for this function. 
@@ -400,13 +408,14 @@ First, I will conduct a pull of the PNUMData where the education Applicant value
 
 ```{r dtapull1}
 numdata <- PNUMData()
-numdata %>% filter(educationApplicant==TRUE & incidentType %in% c('Severe Storm','Flood'))
+
+print(numdata %>% filter(educationApplicant==TRUE & incidentType %in% c('Severe Storm','Flood')))
 ```
 
 Second, the below code pulls the PNUMData where the Federal Grant Amount is greater than $1,000,000 and the Number of projects is less than 10. I was surprised that there were so many instances were there were very few numbers of Projects that corresponded to large grants. It would be interesting to see what those projects consisted of. 
 
 ```{r dtapull2}
-numdata %>% filter(federalObligatedAmount > 1000000 & numberOfProjects < 10 )
+print(numdata %>% filter(federalObligatedAmount > 1000000 & numberOfProjects < 10 ))
 ```
 
 ### Contingency Tables 
@@ -428,14 +437,16 @@ table(numdata$state,numdata$educationApplicant)
 To Explore the question for whether a disaster type corresponded to a larger level of funding, the below code will display the mean, max, and min values of funding for each storm type. From the results, it can be seen that the Tornado storm type obtained the highest average funding out of all of the storm types, it also had the highest maximum amount of funding, which would make sense seeing that the damage done from a tornado is highly catastrophic, so larger grant funding to address issues surrounding that type of disaster would be reasonable. 
 
 ```{r num1}
-numdata %>% summarize(MinFunding = min(federalObligatedAmount),MeanFunding = mean(federalObligatedAmount), MaxFunding = max(federalObligatedAmount), .by=incidentType)
+print(numdata %>% summarize(MinFunding = min(federalObligatedAmount),MeanFunding = mean(federalObligatedAmount), MaxFunding = max(federalObligatedAmount), .by=incidentType))
 ```
 
 To explore the question of whether there were more projects conducted for grants in certain states, below is a table of the minimum, average and maximum number of projects in each state. Based on the results, even though Texas has the highest maximum number of projects, North Dakota held the higest average amount of projects ( though marginally higher than Texas). 
 
 ```{r num2}
 numsum <- numdata %>% summarize(MinNumProjects = min(numberOfProjects),MeanNumProjects = mean(numberOfProjects), MaxFNumProjects = max(numberOfProjects), .by=state) 
-numsum %>% arrange(desc(MeanNumProjects))
+
+print(numsum %>% arrange(desc(MeanNumProjects)))
+
 ```
 
 ### Plots 
@@ -468,7 +479,7 @@ To see the frequncies of applicants with disaster damange at the variious price 
 ```{r sumlevels}
 numdata <- IAData() 
 
-numdata %>% summarize(NoDamage = sum(noFemaInspectedDamage), Btwn1and10000 = sum(femaInspectedDamageBetween1And10000), Btwn10001and20000 = sum(femaInspectedDamageBetween10001And20000), Btwn20001and30000 = sum(femaInspectedDamageBetween20001And30000),GT30000 = sum(femaInspectedDamageGreaterThan30000), .by=stateabb)
+print(numdata %>% summarize(NoDamage = sum(noFemaInspectedDamage), Btwn1and10000 = sum(femaInspectedDamageBetween1And10000), Btwn10001and20000 = sum(femaInspectedDamageBetween10001And20000), Btwn20001and30000 = sum(femaInspectedDamageBetween20001And30000),GT30000 = sum(femaInspectedDamageGreaterThan30000), .by=stateabb))
 
 ```
 
@@ -476,7 +487,7 @@ Below shows the total, mean and maximum values of repar/replace, rental and othe
 
 ```{r stats}
 
-numdata %>% summarize(RepairSum = sum(repairReplaceAmount), RepairMean = mean(repairReplaceAmount), RepairMax = max(repairReplaceAmount), RentalSum = sum(rentalAmount), RentalMean = mean(rentalAmount), RentalMax = max(rentalAmount) , otherSum = sum(otherNeedsAmount) , otherMean = mean(otherNeedsAmount), otherMax = max(otherNeedsAmount),  .by=stateabb)
+print(numdata %>% summarize(RepairSum = sum(repairReplaceAmount), RepairMean = mean(repairReplaceAmount), RepairMax = max(repairReplaceAmount), RentalSum = sum(rentalAmount), RentalMean = mean(rentalAmount), RentalMax = max(rentalAmount) , otherSum = sum(otherNeedsAmount) , otherMean = mean(otherNeedsAmount), otherMax = max(otherNeedsAmount),  .by=stateabb))
 ```
 
 
