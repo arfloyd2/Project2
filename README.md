@@ -1,10 +1,3 @@
----
-title: "Project 2: Creating a Vignette for API Interactions"
-author: "Angelice Floyd"
-date: "2023-10-11"
-urlcolor: blue
----
-
 Project 2: Creating a Vignette for API Interactions
 ================
 Angelice Floyd
