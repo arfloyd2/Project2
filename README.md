@@ -3,14 +3,16 @@ Project 2: Creating a Vignette for API Interactions
 Angelice Floyd
 2023-10-11
 
-- [Introduction](#introduction)
-- [Requirements](#requirements)
-- [Public Assistance Funded Projects
-  Endpoint](#public-assistance-funded-projects-endpoint)
-- [Individual Assistance for
-  Homeowners](#individual-assistance-for-homeowners)
-- [Emergency Management Performance
-  Grant](#emergency-management-performance-grant)
+- [Introduction and Requirements](#introduction-and-requirements)
+  - [Introduction](#introduction)
+  - [Requirements](#requirements)
+- [Functions for API Interactions](#functions-for-api-interactions)
+  - [Public Assistance Funded Projects
+    Endpoint](#public-assistance-funded-projects-endpoint)
+  - [Individual Assistance for
+    Homeowners](#individual-assistance-for-homeowners)
+  - [Emergency Management Performance
+    Grant](#emergency-management-performance-grant)
 - [Data Exploration](#data-exploration)
   - [Public Assistance Funded
     Projects](#public-assistance-funded-projects)
@@ -31,18 +33,7 @@ Angelice Floyd
 This line of code creates the render function for R to be able to run
 wihout hitting the “Knit” button.
 
-Contents
-
-- Intro and Requirements  
-- Functions for API Interaction
-  - `PAData`  
-  - `PNUMData`  
-  - `IAData`  
-  - `EMPData`  
-- Data Exploration  
-- Wrap- Up
-
-\#Introduction and Requirements
+# Introduction and Requirements
 
 ## Introduction
 
@@ -67,7 +58,7 @@ library(httr)
 library(jsonlite)
 ```
 
-\#Functions for API Interactions
+# Functions for API Interactions
 
 ## [Public Assistance Funded Projects Endpoint](https://www.fema.gov/openfema-data-page/public-assistance-funded-project-summaries-v1)
 
@@ -369,21 +360,6 @@ APIDataIN <- outputAPI$EmergencyManagementPerformanceGrants %>%
 
 print(tibble(index = unique(APIDataIN$index)) %>% separate(index,c("state","startdate"),sep="_") %>% mutate(stateabb = state.abb[match(state,state.name)]))
 ```
-
-    ## # A tibble: 81 × 3
-    ##    state          startdate  stateabb
-    ##    <chr>          <chr>      <chr>   
-    ##  1 Alabama        2014-10-01 AL      
-    ##  2 Alaska         2014-07-01 AK      
-    ##  3 Alaska         2014-10-01 AK      
-    ##  4 Alaska         2013-10-01 AK      
-    ##  5 American Samoa 2014-10-01 <NA>    
-    ##  6 Arizona        2014-10-01 AZ      
-    ##  7 Arkansas       2014-10-01 AR      
-    ##  8 Arkansas       2015-01-01 AR      
-    ##  9 California     2014-12-01 CA      
-    ## 10 California     2014-09-01 CA      
-    ## # ℹ 71 more rows
 
 Next, this set of code creates a function that pulls the Emergency
 Management Performance Grant data from the endpoint. There are some

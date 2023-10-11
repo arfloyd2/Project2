@@ -22,18 +22,7 @@ rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /
               )
 ```
 
-Contents  
-
-* Intro and Requirements   
- * Functions for API Interaction  
-    * `PAData`  
-    * `PNUMData`   
-    * `IAData`    
-    * `EMPData`    
-  * Data Exploration    
-  * Wrap- Up    
-
-#Introduction and Requirements   
+# Introduction and Requirements   
 
 ## Introduction   
 
@@ -49,7 +38,7 @@ library(httr)
 library(jsonlite)
 ```
 
-#Functions for API Interactions
+# Functions for API Interactions
 
 ## [Public Assistance Funded Projects Endpoint](https://www.fema.gov/openfema-data-page/public-assistance-funded-project-summaries-v1)
 
