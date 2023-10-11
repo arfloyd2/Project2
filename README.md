@@ -3,6 +3,33 @@ Project 2: Creating a Vignette for API Interactions
 Angelice Floyd
 2023-10-11
 
+- [Introduction and Requirements](#introduction-and-requirements)
+  - [Introduction](#introduction)
+  - [Requirements](#requirements)
+- [Functions for API Interactions](#functions-for-api-interactions)
+  - [Public Assistance Funded Projects
+    Endpoint](#public-assistance-funded-projects-endpoint)
+  - [Individual Assistance for
+    Homeowners](#individual-assistance-for-homeowners)
+  - [Emergency Management Performance
+    Grant](#emergency-management-performance-grant)
+- [Data Exploration](#data-exploration)
+  - [Public Assistance Funded
+    Projects](#public-assistance-funded-projects)
+    - [Data pulls](#data-pulls)
+    - [Contingency Tables](#contingency-tables)
+    - [Numerical Summaries](#numerical-summaries)
+    - [Plots](#plots)
+  - [Individual Assistance for
+    Homeowners](#individual-assistance-for-homeowners-1)
+    - [Numerical Summaries](#numerical-summaries-1)
+    - [Plots](#plots-1)
+  - [Emergency Management Performance
+    Grants](#emergency-management-performance-grants)
+    - [Numerical Summaries](#numerical-summaries-2)
+    - [Plots](#plots-2)
+- [Wrap Up](#wrap-up)
+
 # Introduction and Requirements
 
 ## Introduction
