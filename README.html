@@ -604,6 +604,48 @@ padding-top: 0px;
 <h1 id="project-2-creating-a-vignette-for-api-interactions">Project 2:
 Creating a Vignette for API Interactions</h1>
 <p>Angelice Floyd 2023-10-11</p>
+<ul>
+<li><a href="#introduction-and-requirements">Introduction and
+Requirements</a>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#requirements">Requirements</a></li>
+</ul></li>
+<li><a href="#functions-for-api-interactions">Functions for API
+Interactions</a>
+<ul>
+<li><a href="#public-assistance-funded-projects-endpoint">Public
+Assistance Funded Projects Endpoint</a></li>
+<li><a href="#individual-assistance-for-homeowners">Individual
+Assistance for Homeowners</a></li>
+<li><a href="#emergency-management-performance-grant">Emergency
+Management Performance Grant</a></li>
+</ul></li>
+<li><a href="#data-exploration">Data Exploration</a>
+<ul>
+<li><a href="#public-assistance-funded-projects">Public Assistance
+Funded Projects</a>
+<ul>
+<li><a href="#data-pulls">Data pulls</a></li>
+<li><a href="#contingency-tables">Contingency Tables</a></li>
+<li><a href="#numerical-summaries">Numerical Summaries</a></li>
+<li><a href="#plots">Plots</a></li>
+</ul></li>
+<li><a href="#individual-assistance-for-homeowners-1">Individual
+Assistance for Homeowners</a>
+<ul>
+<li><a href="#numerical-summaries-1">Numerical Summaries</a></li>
+<li><a href="#plots-1">Plots</a></li>
+</ul></li>
+<li><a href="#emergency-management-performance-grants">Emergency
+Management Performance Grants</a>
+<ul>
+<li><a href="#numerical-summaries-2">Numerical Summaries</a></li>
+<li><a href="#plots-2">Plots</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#wrap-up">Wrap Up</a></li>
+</ul>
 <h1 id="introduction-and-requirements">Introduction and
 Requirements</h1>
 <h2 id="introduction">Introduction</h2>
@@ -1229,6 +1271,14 @@ projects were recorded in 2013 and 2014.</p>
 data for the total funding per year. This summary agrees with the above
 contingency table where the most funding came from 2013 and 2014.</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>numdata <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">TotalFunds =</span> <span class="fu">sum</span>(fundingAmount), <span class="at">.by =</span> Year)</span></code></pre></div>
+<div data-pagedtable="false">
+
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Year"],"name":[1],"type":["chr"],"align":["left"]},{"label":["TotalFunds"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"2014","2":"89586933"},{"1":"2013","2":"50733926"},{"1":"2015","2":"1390771"},{"1":"2016","2":"1225"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+
+</div>
+
 <h3 id="plots-2">Plots</h3>
 <p>We could see how much funding was provided per state. Below is a bar
 graph that shows how much funding was provided per state for funds
