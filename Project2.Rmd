@@ -72,7 +72,7 @@ PAdata <- function(statename = "all") {
 }
 
 data <- PAdata()
-knitr::kable(head(data,50))
+knitr::kable(head(data,10))
 ```
 
 This next set of code modifies the endpoint to filter on pulling data from either the full state name, the  county name of the region, or the two letter abbreviated state name. Thus, the user could type in state name and the data filters on the state name value. However, if the user chooses to type in either the two letter state name or the county name, the API modifies to filter on the given value. Further, all of this can be typed in as one string under statename, where the default is all state values. Finally, the output pulls all of the relevant variables that will be used in the Exploratory Data analysis. 
