@@ -1,4 +1,4 @@
-rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io.git/Project2.Rmd',
+rmarkdown::render(input = "/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io/Project2.Rmd",
                   output_file = "README.md", 
                   output_format = "github_document", 
                   output_options = list(
@@ -6,7 +6,6 @@ rmarkdown::render(input = '/Users/angelicefloyd/Documents/ST558_Data_Science_R /
                     toc = TRUE,
                     toc_depth = 3, 
                     number_of_sections = TRUE, 
-                    df_print = "paged", 
-                    or_something = TRUE
-                  )
+                    df_print = "tibble", 
+                    or_something = TRUE)
 )
