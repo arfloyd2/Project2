@@ -7,15 +7,17 @@ urlcolor: blue
 
 
 ```{r rndr, eval = FALSE, echo= FALSE}
-rmarkdown::render(input = '"/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io.git/Project2.Rmd',
-              output_file = "README.md", 
-              output_format = "github_document", 
-              output_options = list(
-                toc = TRUE,
-                toc_depth = 3, 
-                df_print = "tibble",
-                )
-              )
+rmarkdown::render(input = "/Users/angelicefloyd/Documents/ST558_Data_Science_R /Project2/Project2.github.io/Project2.Rmd",
+                  output_file = "README.md", 
+                  output_format = "github_document", 
+                  output_options = list(
+                    name_value_pairs = "value", 
+                    toc = TRUE,
+                    toc_depth = 3, 
+                    number_of_sections = TRUE, 
+                    df_print = "tibble", 
+                    or_something = TRUE)
+)
 ```
 
 # Introduction and Requirements   
@@ -32,6 +34,7 @@ This section loads the packages required for interacting with the FEMA API, mani
 library(tidyverse)
 library(httr)
 library(jsonlite)
+library(knitr)
 ```
 
 # Functions for API Interactions
@@ -69,7 +72,7 @@ PAdata <- function(statename = "all") {
 }
 
 data <- PAdata()
-print(head(data),30)
+knitr::kable(head(data,50))
 ```
 
 This next set of code modifies the endpoint to filter on pulling data from either the full state name, the  county name of the region, or the two letter abbreviated state name. Thus, the user could type in state name and the data filters on the state name value. However, if the user chooses to type in either the two letter state name or the county name, the API modifies to filter on the given value. Further, all of this can be typed in as one string under statename, where the default is all state values. Finally, the output pulls all of the relevant variables that will be used in the Exploratory Data analysis. 
@@ -139,13 +142,13 @@ PNUMData <- function(statename = "all") {
 
 data1 <- PNUMData()
 
-print(head(data1), 30)
+knitr::kable(head(data1,10))
 ```
 
 Below is an output example for the county of Lamar in Alabama. 
 
 ```{r outexmple}
-print(PNUMData("Lamar"))
+knitr::kable(PNUMData("Lamar"))
 ```
 
 ## [Individual Assistance for Homeowners](https://www.fema.gov/openfema-data-page/housing-assistance-program-data-owners-v2)
@@ -238,13 +241,13 @@ else{
 
 data3 <- IAData()
 
-print(head(data3), 30)
+knitr::kable(head(data3,10))
 ```
 
 Below is an output example of the data for a zip code in Arkansas
 
 ```{r output}
-print(IAData('99776'))
+knitr::kable(head(IAData('99776'),10))
 ```
 
 ## [Emergency Management Performance Grant](https://www.fema.gov/openfema-data-page/emergency-management-performance-grants-v2)
@@ -263,7 +266,7 @@ APIDataIN <- outputAPI$EmergencyManagementPerformanceGrants %>%
   mutate(stateabb = state.abb[match(state,state.name)]) %>%  separate(projectStartDate,c("startdate","starttime"),sep = "T",convert=TRUE, remove = FALSE) %>% separate(projectEndDate,c("enddate","endtime"), sep = "T", convert = TRUE, remove = FALSE) %>% unite("index",state,startdate, remove = FALSE)
 
 
-print(tibble(index = unique(APIDataIN$index)) %>% separate(index,c("state","startdate"),sep="_") %>% mutate(stateabb = state.abb[match(state,state.name)]))
+knitr::kable(tibble(index = unique(APIDataIN$index)) %>% separate(index,c("state","startdate"),sep="_") %>% mutate(stateabb = state.abb[match(state,state.name)]))
 ```
 
 Next, this set of code creates a function that pulls the Emergency Management Performance Grant data from the endpoint. There are some options for the user.  
@@ -377,7 +380,7 @@ EMPData <- function(statename = "all",stdate = "all") {
 
 data4 <- EMPData()
 
-print(head(data4),30)
+knitr::kable(head(data4,10))
 ```
 
 Below are examples of the options available to the user for this function. 
@@ -406,13 +409,13 @@ First, I will conduct a pull of the PNUMData where the education Applicant value
 ```{r dtapull1}
 numdata <- PNUMData()
 
-print(numdata %>% filter(educationApplicant==TRUE & incidentType %in% c('Severe Storm','Flood')))
+knitr::kable(numdata %>% filter(educationApplicant==TRUE & incidentType %in% c('Severe Storm','Flood')))
 ```
 
 Second, the below code pulls the PNUMData where the Federal Grant Amount is greater than $1,000,000 and the Number of projects is less than 10. I was surprised that there were so many instances were there were very few numbers of Projects that corresponded to large grants. It would be interesting to see what those projects consisted of. 
 
 ```{r dtapull2}
-print(numdata %>% filter(federalObligatedAmount > 1000000 & numberOfProjects < 10 ))
+knitr::kable(numdata %>% filter(federalObligatedAmount > 1000000 & numberOfProjects < 10 ))
 ```
 
 ### Contingency Tables 
@@ -434,7 +437,7 @@ table(numdata$state,numdata$educationApplicant)
 To Explore the question for whether a disaster type corresponded to a larger level of funding, the below code will display the mean, max, and min values of funding for each storm type. From the results, it can be seen that the Tornado storm type obtained the highest average funding out of all of the storm types, it also had the highest maximum amount of funding, which would make sense seeing that the damage done from a tornado is highly catastrophic, so larger grant funding to address issues surrounding that type of disaster would be reasonable. 
 
 ```{r num1}
-print(numdata %>% summarize(MinFunding = min(federalObligatedAmount),MeanFunding = mean(federalObligatedAmount), MaxFunding = max(federalObligatedAmount), .by=incidentType))
+knitr::kable(numdata %>% summarize(MinFunding = min(federalObligatedAmount),MeanFunding = mean(federalObligatedAmount), MaxFunding = max(federalObligatedAmount), .by=incidentType))
 ```
 
 To explore the question of whether there were more projects conducted for grants in certain states, below is a table of the minimum, average and maximum number of projects in each state. Based on the results, even though Texas has the highest maximum number of projects, North Dakota held the higest average amount of projects ( though marginally higher than Texas). 
@@ -442,7 +445,7 @@ To explore the question of whether there were more projects conducted for grants
 ```{r num2}
 numsum <- numdata %>% summarize(MinNumProjects = min(numberOfProjects),MeanNumProjects = mean(numberOfProjects), MaxFNumProjects = max(numberOfProjects), .by=state) 
 
-print(numsum %>% arrange(desc(MeanNumProjects)))
+knitr::kable(numsum %>% arrange(desc(MeanNumProjects)))
 
 ```
 
@@ -476,7 +479,7 @@ To see the frequncies of applicants with disaster damange at the variious price 
 ```{r sumlevels}
 numdata <- IAData() 
 
-print(numdata %>% summarize(NoDamage = sum(noFemaInspectedDamage), Btwn1and10000 = sum(femaInspectedDamageBetween1And10000), Btwn10001and20000 = sum(femaInspectedDamageBetween10001And20000), Btwn20001and30000 = sum(femaInspectedDamageBetween20001And30000),GT30000 = sum(femaInspectedDamageGreaterThan30000), .by=stateabb))
+knitr::kable(numdata %>% summarize(NoDamage = sum(noFemaInspectedDamage), Btwn1and10000 = sum(femaInspectedDamageBetween1And10000), Btwn10001and20000 = sum(femaInspectedDamageBetween10001And20000), Btwn20001and30000 = sum(femaInspectedDamageBetween20001And30000),GT30000 = sum(femaInspectedDamageGreaterThan30000), .by=stateabb))
 
 ```
 
@@ -484,7 +487,7 @@ Below shows the total, mean and maximum values of repar/replace, rental and othe
 
 ```{r stats}
 
-print(numdata %>% summarize(RepairSum = sum(repairReplaceAmount), RepairMean = mean(repairReplaceAmount), RepairMax = max(repairReplaceAmount), RentalSum = sum(rentalAmount), RentalMean = mean(rentalAmount), RentalMax = max(rentalAmount) , otherSum = sum(otherNeedsAmount) , otherMean = mean(otherNeedsAmount), otherMax = max(otherNeedsAmount),  .by=stateabb))
+knitr::kable(numdata %>% summarize(RepairSum = sum(repairReplaceAmount), RepairMean = mean(repairReplaceAmount), RepairMax = max(repairReplaceAmount), RentalSum = sum(rentalAmount), RentalMean = mean(rentalAmount), RentalMax = max(rentalAmount) , otherSum = sum(otherNeedsAmount) , otherMean = mean(otherNeedsAmount), otherMax = max(otherNeedsAmount),  .by=stateabb))
 ```
 
 
@@ -534,7 +537,7 @@ table(numdata$state,numdata$Year)
 To see how much funding was given out per start year, below will show data for the total funding per year. This summary agrees with the above contingency table where the most funding came from 2013 and 2014.  
 
 ```{r totfunds}
-numdata %>% summarize(TotalFunds = sum(fundingAmount), .by = Year)
+knitr::kable(numdata %>% summarize(TotalFunds = sum(fundingAmount), .by = Year))
 ```
 
 ### Plots 
